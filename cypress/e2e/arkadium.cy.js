@@ -1,8 +1,6 @@
 /// <reference types="cypress" />
 
-// --------------------
-// Constants & Selectors
-// --------------------
+// Constants
 
 const BASE_URL = 'https://www.arkadium.com/';
 const SUPPORT_TILE_SELECTOR = '[data-testid^="support-"]';
@@ -10,7 +8,7 @@ const SIDEBAR_SELECTOR = '#nav-sidemenu';
 const BEST_HREF = '/free-online-games/best/';
 const GRID_CARD_TITLE_SELECTOR = '[data-testid="grid-sc"] [data-testid="card-title"]';
 
-// List based on the "Best Games" grid HTML you inspected
+// List of "Best Games"
 const BEST_GAME_TITLES = [
   'Arkadium Bubble Shooter',
   'Free Online Bridge',
@@ -41,11 +39,6 @@ const BEST_GAME_TITLES = [
   'Tiles Game Explorer',
 ];
 
-
-// --------------------
-// Helper functions
-// --------------------
-
 // Closes the privacy popup if it appears (AGREE button)
 function acceptPrivacyIfPresent() {
   cy.log('Checking for privacy popup (AGREE button)');
@@ -70,12 +63,10 @@ function openSupportModal() {
     .should('be.visible')
     .click({ force: true });
 
-  // Wait for any support tile to appear
   cy.get(SUPPORT_TILE_SELECTOR, { timeout: 20000 }).should('exist');
 }
 
 // Opens the left sidebar menu (hamburger)
-// Supports both id="sidebarToggle" and data-testid="sidebar-hamburger-icon"
 function openSidebar() {
   cy.log('Opening sidebar via hamburger icon');
 
@@ -88,8 +79,7 @@ function openSidebar() {
   cy.get(SIDEBAR_SELECTOR, { timeout: 15000 }).should('be.visible');
 }
 
-// Types a category into the sidebar search by setting value directly
-// (avoids cy.type() flakiness due to React re-renders)
+// Types a category into the sidebar search
 function searchCategoryInSidebar(category) {
   cy.log(`Searching for category "${category}" in sidebar search`);
 
@@ -100,7 +90,6 @@ function searchCategoryInSidebar(category) {
 
   cy.get('@sidebarSearch').click({ force: true });
 
-  // Set the value + trigger events instead of cy.type()
   cy.get('@sidebarSearch')
     .invoke('val', category)
     .trigger('input')
@@ -119,15 +108,12 @@ function clickBestFromSidebar() {
   });
 }
 
-
-// --------------------
 // Test suite
-// --------------------
 
 describe('Arkadium.com – UI Scenarios (Cypress)', () => {
   beforeEach(() => {
     cy.visit(BASE_URL);
-    cy.wait(7000); // allow hero + privacy popup to load
+    cy.wait(7000); 
     acceptPrivacyIfPresent();
   });
 
@@ -154,7 +140,6 @@ describe('Arkadium.com – UI Scenarios (Cypress)', () => {
     openSidebar();
     searchCategoryInSidebar(category);
 
-    // Verify that the category appears in the search results (as a link)
     cy.contains('a', category, { timeout: 15000 }).should('exist');
   });
 
@@ -174,7 +159,7 @@ describe('Arkadium.com – UI Scenarios (Cypress)', () => {
 
     // 5) Assert that each expected Best game title appears in the grid
     BEST_GAME_TITLES.forEach(title => {
-      const escaped = title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // escape for regex
+      const escaped = title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       cy.contains('[data-testid="card-title"]', new RegExp(escaped, 'i'), { timeout: 15000 })
         .should('exist', `Expected "${title}" to be listed in Best games grid`);
     });
