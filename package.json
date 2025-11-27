@@ -1,0 +1,12 @@
+{
+  "name": "arkadium-cypress-tests",
+  "version": "1.0.0",
+  "private": true,
+  "devDependencies": {
+    "cypress": "^13.0.0"
+  },
+  "scripts": {
+    "test": "cypress run",
+    "test:open": "cypress open"
+  }
+}
